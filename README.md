@@ -11,7 +11,7 @@ Also, change the variable 'default_download_directory' in the script.py file. Se
 
 ### Running the Code
 
-To obtain the analysis for Structural MRI Pediatric Bipolar and Schizophrenia Lab Tutorial, create a .csv file, such that the first column consists of the path to the input file and the second column (optional) consists of the path the the output directory. If no second column is present, the data will be appended to the summary (output.csv), but the output files will not be saved. For example,
+To obtain the analysis for Structural MRI Pediatric Bipolar and Schizophrenia Lab Tutorial, create a .csv file, such that the first column consists of the path to the input file and the second column (optional) consists of the path to the output directory. If no second column is present, the data will be appended to the summary (output.csv), but the output files will not be saved. For example,
 ```
 /Users/preksha/Desktop/anat_brain.nii.gz
 /Users/preksha/Desktop/anat_brain_2.nii.gz,
@@ -19,6 +19,13 @@ To obtain the analysis for Structural MRI Pediatric Bipolar and Schizophrenia La
 /Users/preksha/Desktop/anat_brain_4.nii.gz,/Users/preksha/Desktop/output/anat_brain_4
 ```
 A sample file is located in the folder (input.csv)
+
+To generate a input.csv file by extracting all files with a particular extension from a directory, run the following command:
+```
+search_folder="/Users/prekshapatel/Desktop"   # please ensure this is the absolute path
+extension="*.nii.gz"
+find $search_folder -name $extension > input.csv
+```
 
 NOTE
 - Any file which has less than one column or more than two columns will be ignored
