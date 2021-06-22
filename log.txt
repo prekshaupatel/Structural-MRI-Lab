@@ -1,0 +1,2 @@
+ERROR: Please enter name of .csv file as an argument
+	USAGE: python3 script.py [input.csv]
