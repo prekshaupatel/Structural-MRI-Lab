@@ -30,6 +30,7 @@ python3 script.py input.csv
 
 NOTE
 - To check the results, please examine the log.txt file that was created after running the program
+- A summarized version of the results are saved in output.csv
 
 ### References
 The scripts pertain to the course material taught in NS 101L at UCLA by Dr. Grisham

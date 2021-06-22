@@ -12,6 +12,14 @@ from os import path
 
 default_download_directory = "/Users/prekshapatel/Downloads"
 log = open('log.txt', 'w')
+output_csv = open('output.csv', 'w')
+
+def process_voi_csv(path_to_upload_file):
+    f = open(path.join(default_download_directory, "voidata.csv"), 'r')
+    data = [i.split(',') for i in f.read().splitlines()]
+    n_data = ','.join([path_to_upload_file, data[1][1], data[1][2]])
+    return n_data
+
 
 def process_request(path_to_upload_file, path_to_output_directory):                    
     # STEP 1
@@ -95,7 +103,7 @@ def process_request(path_to_upload_file, path_to_output_directory):
 
     viewer_snapshot_tab = driver.find_element_by_xpath('//*[@id="contentsB_4"]/div/div/div/div/form/div[2]/button')
     viewer_snapshot_tab.click()
-    time.sleep(5)
+    time.sleep(10)
 
     save_to_file = driver.find_element_by_xpath('/html/body/div[5]/div/div/div[3]/button')
     save_to_file.click()
@@ -123,7 +131,8 @@ def process_request(path_to_upload_file, path_to_output_directory):
 
     # close the browser
     driver.close()
-    
+
+    output_csv.write(process_voi_csv(path_to_upload_file)+'\n')
     os.rename(path.join(default_download_directory, 'voidata.csv'), path.join(path_to_output_directory, 'voidata.csv'))
     os.rename(path.join(default_download_directory, 'snapshot.png'), path.join(path_to_output_directory, 'snapshot.png'))
 
@@ -148,8 +157,10 @@ def main():
         log.write("ERROR: Please remove %s\n" % path.join(default_download_directory, 'snapshot.png'))
         exit(1)
         
+    output_csv.write(",Gray_Matter,White_Matter\n")
     f = open(sys.argv[1], 'r')
     data = [i.split(',') for i in f.read().splitlines() if (i != "")]
+
     for line in data:
         if len(line) != 2:
             log.write("FAILED: '" + ",".join(line) + "'\n\t(line should contain only two values: input_file_path, output_directory_path)\n")
