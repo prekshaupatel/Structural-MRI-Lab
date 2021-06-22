@@ -1,6 +1,8 @@
 import os
 import sys
 import time
+from os import path
+
 import selenium
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -8,7 +10,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support import expected_conditions as EC
 
-from os import path
 
 default_download_directory = "/Users/prekshapatel/Downloads"
 log = open('log.txt', 'w')
@@ -21,7 +22,7 @@ def process_voi_csv(path_to_upload_file):
     return n_data
 
 
-def process_request(path_to_upload_file, path_to_output_directory):                    
+def process_request(path_to_upload_file, path_to_output_directory = ""):            
     # STEP 1
 
     # using Chrome to access web
@@ -133,9 +134,14 @@ def process_request(path_to_upload_file, path_to_output_directory):
     driver.close()
 
     output_csv.write(process_voi_csv(path_to_upload_file)+'\n')
-    os.rename(path.join(default_download_directory, 'voidata.csv'), path.join(path_to_output_directory, 'voidata.csv'))
-    os.rename(path.join(default_download_directory, 'snapshot.png'), path.join(path_to_output_directory, 'snapshot.png'))
-
+    
+    if path_to_output_directory != "":
+        os.rename(path.join(default_download_directory, 'voidata.csv'), path.join(path_to_output_directory, 'voidata.csv'))
+        os.rename(path.join(default_download_directory, 'snapshot.png'), path.join(path_to_output_directory, 'snapshot.png'))
+    else:
+        os.remove(path.join(default_download_directory, 'voidata.csv'))
+        os.remove(path.join(default_download_directory, 'snapshot.png'))
+        
     print("SUCCESS: '%s,%s'" % (path_to_upload_file, path_to_output_directory))
     log.write("SUCCESS: '%s,%s'\n" % (path_to_upload_file, path_to_output_directory))
 
@@ -147,11 +153,12 @@ def main():
         log.write("ERROR: Please enter name of .csv file as an argument\n\tUSAGE: python3 script.py [input.csv]\n")
         exit(1)
 
-    # check if default downloads folder had voidata.csv or snapshot.png
+    # check if default download folder had voidata.csv or snapshot.png
     if path.isfile(path.join(default_download_directory, 'voidata.csv')):
         print ("Please remove %s" % path.join(default_download_directory, 'voidata.csv'))
         log.write("ERROR: Please remove %s\n" % path.join(default_download_directory, 'voidata.csv'))
         exit(1)
+        
     if path.isfile(path.join(default_download_directory, 'snapshot.png')):
         print ("Please remove %s" % path.join(default_download_directory, 'snapshot.png'))
         log.write("ERROR: Please remove %s\n" % path.join(default_download_directory, 'snapshot.png'))
@@ -162,14 +169,18 @@ def main():
     data = [i.split(',') for i in f.read().splitlines() if (i != "")]
 
     for line in data:
-        if len(line) != 2:
+        if len(line) < 1 or len(line) > 2:
             log.write("FAILED: '" + ",".join(line) + "'\n\t(line should contain only two values: input_file_path, output_directory_path)\n")
             continue
-        if not path.exists(line[1]):
+        
+        if len(line) == 1 or line[1] == "": # if not saving output (missing second column)
+            process_request(line[0])
+        elif not path.exists(line[1]): # if output directory does not exist
             os.makedirs(line[1])
-        elif not path.isdir(line[1]):
+        elif not path.isdir(line[1]): # if output directory path exists but is not a directory
             log.write("FAILED: '%s,%s'\n\t(unable to create directory %s, file with path already exists)\n"%(line[0], line[1], line[1]))
             continue
-        process_request(line[0], line[1])
+        else: 
+            process_request(line[0], line[1])
 
 main()

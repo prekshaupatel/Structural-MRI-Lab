@@ -11,15 +11,17 @@ Also, change the variable 'default_download_directory' in the script.py file. Se
 
 ### Running the Code
 
-To obtain the analysis for Structural MRI Pediatric Bipolar and Schizophrenia Lab Tutorial, create a .csv file, such that the first column consists of the path to the input file and the second column consists of the path the the output directory. For example,
+To obtain the analysis for Structural MRI Pediatric Bipolar and Schizophrenia Lab Tutorial, create a .csv file, such that the first column consists of the path to the input file and the second column (optional) consists of the path the the output directory. If no second column is present, the data will be appended to the summary (output.csv), but the output files will not be saved. For example,
 ```
-/Users/preksha/Desktop/anat_brain.nii.gz,/Users/preksha/Desktop/output/anat_brain
-/Users/preksha/Desktop/anat_brain_2.nii.gz,/Users/preksha/Desktop/output/anat_brain_2
+/Users/preksha/Desktop/anat_brain.nii.gz
+/Users/preksha/Desktop/anat_brain_2.nii.gz,
+/Users/preksha/Desktop/anat_brain_3.nii.gz,/Users/preksha/Desktop/output/anat_brain_3
+/Users/preksha/Desktop/anat_brain_4.nii.gz,/Users/preksha/Desktop/output/anat_brain_4
 ```
 A sample file is located in the folder (input.csv)
 
 NOTE
-- Any file which has less than or more than two columns will be ignored
+- Any file which has less than one column or more than two columns will be ignored
 - If the output directory does not exist, it will be created
 - If a file named 'voidata.csv' or 'snapshot.png' is present in the output directory, it will be overwritten
 
