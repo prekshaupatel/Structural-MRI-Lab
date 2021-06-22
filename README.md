@@ -16,6 +16,7 @@ To obtain the analysis for Structural MRI Pediatric Bipolar and Schizophrenia La
 /Users/preksha/Desktop/anat_brain.nii.gz,/Users/preksha/Desktop/output/anat_brain
 /Users/preksha/Desktop/anat_brain_2.nii.gz,/Users/preksha/Desktop/output/anat_brain_2
 ```
+A sample file is located in the folder (input.csv)
 
 NOTE
 - Any file which has less than or more than two columns will be ignored
@@ -31,4 +32,4 @@ NOTE
 - To check the results, please examine the log.txt file that was created after running the program
 
 ### References
-The script pertain to the course material taught in NS 101L at UCLA by Dr. Grisham
+The scripts pertain to the course material taught in NS 101L at UCLA by Dr. Grisham
