@@ -1,3 +1,5 @@
+# python3 script.py [input.csv]
+
 import os
 import sys
 import time
@@ -22,11 +24,8 @@ def process_voi_csv(path_to_upload_file):
     return n_data
 
 
-def process_request(path_to_upload_file, path_to_output_directory = ""):            
+def process_request(driver, path_to_upload_file, path_to_output_directory = ""):
     # STEP 1
-
-    # using Chrome to access web
-    driver = webdriver.Chrome(ChromeDriverManager().install())
 
     # go to BioImage Suite Web’s Orthogonal Viewer Tool
     browser = driver.get("https://bioimagesuiteweb.github.io/webapp/viewer.html")
@@ -98,17 +97,18 @@ def process_request(path_to_upload_file, path_to_output_directory = ""):
 
     # STEP 5
 
-    view_snapshot_tab = driver.find_element_by_xpath('//*[@id="headingB_4"]/h4/a')
-    view_snapshot_tab.click()
-    time.sleep(5)
+    if path_to_output_directory != "":
+        view_snapshot_tab = driver.find_element_by_xpath('//*[@id="headingB_4"]/h4/a')
+        view_snapshot_tab.click()
+        time.sleep(5)
 
-    viewer_snapshot_tab = driver.find_element_by_xpath('//*[@id="contentsB_4"]/div/div/div/div/form/div[2]/button')
-    viewer_snapshot_tab.click()
-    time.sleep(10)
-
-    save_to_file = driver.find_element_by_xpath('/html/body/div[5]/div/div/div[3]/button')
-    save_to_file.click()
-    time.sleep(1)
+        viewer_snapshot_tab = driver.find_element_by_xpath('//*[@id="contentsB_4"]/div/div/div/div/form/div[2]/button')
+        viewer_snapshot_tab.click()
+        time.sleep(10)
+        
+        save_to_file = driver.find_element_by_xpath('/html/body/div[5]/div/div/div[3]/button')
+        save_to_file.click()
+        time.sleep(1)
 
     # STEP 6
 
@@ -130,9 +130,6 @@ def process_request(path_to_upload_file, path_to_output_directory = ""):
     export_csv.click()
     time.sleep(10)
 
-    # close the browser
-    driver.close()
-
     output_csv.write(process_voi_csv(path_to_upload_file)+'\n')
     
     if path_to_output_directory != "":
@@ -140,7 +137,6 @@ def process_request(path_to_upload_file, path_to_output_directory = ""):
         os.rename(path.join(default_download_directory, 'snapshot.png'), path.join(path_to_output_directory, 'snapshot.png'))
     else:
         os.remove(path.join(default_download_directory, 'voidata.csv'))
-        os.remove(path.join(default_download_directory, 'snapshot.png'))
         
     print("SUCCESS: '%s,%s'" % (path_to_upload_file, path_to_output_directory))
     log.write("SUCCESS: '%s,%s'\n" % (path_to_upload_file, path_to_output_directory))
@@ -168,19 +164,28 @@ def main():
     f = open(sys.argv[1], 'r')
     data = [i.split(',') for i in f.read().splitlines() if (i != "")]
 
+    # using Chrome to access web
+    driver = webdriver.Chrome(ChromeDriverManager().install())
+
     for line in data:
         if len(line) < 1 or len(line) > 2:
-            log.write("FAILED: '" + ",".join(line) + "'\n\t(line should contain only two values: input_file_path, output_directory_path)\n")
+            log.write("FAILED: '" + ",".join(line)
+                      + "'\n\t(line should contain only two values: input_file_path, output_directory_path)\n")
             continue
         
         if len(line) == 1 or line[1] == "": # if not saving output (missing second column)
-            process_request(line[0])
+            process_request(driver, line[0])
         elif not path.exists(line[1]): # if output directory does not exist
             os.makedirs(line[1])
         elif not path.isdir(line[1]): # if output directory path exists but is not a directory
-            log.write("FAILED: '%s,%s'\n\t(unable to create directory %s, file with path already exists)\n"%(line[0], line[1], line[1]))
+            log.write("FAILED: '%s,%s'\n\t(unable to create directory %s, file with path already exists)\n"
+                      % (line[0], line[1], line[1]))
             continue
         else: 
-            process_request(line[0], line[1])
+            process_request(driver, line[0], line[1])
 
+    # close the browser
+    driver.quit()
+
+    
 main()
